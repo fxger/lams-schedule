@@ -1,0 +1,6 @@
+# 顶层依赖，版本取自本项目实测环境（Python 3.13.7 / Windows）pip freeze。
+# 传递依赖（pydantic-core、starlette、protobuf、numpy、pandas 等）由 pip 自动解析。
+fastapi==0.162.0
+uvicorn==0.54.0
+ortools==9.15.6755
+pydantic==2.14.3

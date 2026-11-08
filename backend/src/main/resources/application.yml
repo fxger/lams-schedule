@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: lams-schedule
+  datasource:
+    driver-class-name: org.h2.Driver
+    # 本地 H2 文件库，数据保存在 backend/data/lamsdb.mv.db
+    url: jdbc:h2:file:./data/lamsdb;AUTO_SERVER=TRUE;DATABASE_TO_LOWER=TRUE;NON_KEYWORDS=DAY,WEEK,VALUE
+    username: sa
+    password: ""
+    druid:
+      initial-size: 2
+      min-idle: 2
+      max-active: 10
+      validation-query: select 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      encoding: UTF-8
+  h2:
+    console:
+      # 仅供本地开发调试，且在 WebMvcConfiguration 中放过了 JWT 鉴权；生产环境必须置 false
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: info
+    org.example.lams: info
+    org.example.lamsserver.mapper: debug
+
+lams:
+  jwt:
+    # 演示默认值；部署时用环境变量 LAMS_JWT_SECRET 覆盖
+    secret-key: ${LAMS_JWT_SECRET:lams-schedule-demo-secret-key-please-change-in-production}
+    # 24 小时（原为 7200000000ms ≈ 83 天，演示账号长期有效风险过高）
+    ttl: 86400000
+    token-name: token
+  cors:
+    allowed-origins: http://localhost:8081,http://127.0.0.1:8081,http://localhost:3000
+  schedule:
+    # Python OR-Tools 求解服务地址
+    algo-url: http://localhost:8000/api/schedule
+    # 求解请求超时时间（毫秒），需大于算法侧的 time-limit
+    timeout-ms: 180000
